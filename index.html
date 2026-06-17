@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Los Aparatos Mágicos! - Spanish Learning Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #1E1B4B 0%, #4C1D95 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 3.5rem;
+            margin: 30px 0 10px;
+            background: linear-gradient(135deg, #06B6D4, #8B5CF6, #F97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+        }
+
+        h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: #CBD5E1;
+        }
+
+        .btn {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #F97316, #EC4899);
+        }
+
+        .btn-small {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+        }
+
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .score-counter {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(139, 92, 246, 0.9);
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Learning Mode */
+        .progress-bar {
+            width: 100%;
+            max-width: 600px;
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06B6D4, #8B5CF6);
+            transition: width 0.3s ease;
+        }
+
+        .card-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: #1E1B4B;
+        }
+
+        .gadget-icon {
+            font-size: 8rem;
+            margin: 20px 0;
+            display: block;
+        }
+
+        .spanish-word {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: #4C1D95;
+            margin: 20px 0;
+        }
+
+        .pronunciation {
+            font-size: 1.2rem;
+            color: #64748B;
+            margin-bottom: 20px;
+        }
+
+        .example-phrase {
+            font-size: 1.3rem;
+            background: #F1F5F9;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin: 15px 0;
+            color: #1E1B4B;
+        }
+
+        .speak-btn {
+            background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            margin: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .speak-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Verbs Section */
+        .verb-section {
+            background: rgba(255,255,255,0.95);
+            color: #1E1B4B;
+            border-radius: 20px;
+            padding: 25px;
+            margin: 15px 0;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .verb-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #8B5CF6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verb-example-box {
+            background: #F8FAFC;
+            border-left: 4px solid #06B6D4;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .verb-example-text {
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .verb-example-en {
+            color: #64748B;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        /* Situations */
+        .comic-container {
+            background: rgba(255,255,255,0.95);
+            color: #1E1B4B;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .situation-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: #8B5CF6;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .situation-subtitle {
+            color: #64748B;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .dialogue-box {
+            background: #F1F5F9;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #06B6D4;
+        }
+
+        .dialogue-line {
+            margin: 12px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .dialogue-content {
+            flex: 1;
+        }
+
+        .speaker {
+            font-weight: 700;
+            color: #8B5CF6;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .spanish-text {
+            color: #1E1B4B;
+            font-size: 1.15rem;
+            margin: 5px 0;
+        }
+
+        .english-translation {
+            color: #64748B;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        /* Gap Fill */
+        .gap-fill-container {
+            background: white;
+            color: #1E1B4B;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .gap-question {
+            font-size: 1.3rem;
+            margin: 20px 0;
+            padding: 15px;
+            background: #F8FAFC;
+            border-radius: 10px;
+        }
+
+        .gap-context {
+            color: #64748B;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .gap-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #4C1D95;
+        }
+
+        .gap {
+            display: inline-block;
+            min-width: 120px;
+            border-bottom: 3px solid #8B5CF6;
+            margin: 0 5px;
+            text-align: center;
+            color: #8B5CF6;
+            font-weight: 700;
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px 0;
+        }
+
+        .answer-btn {
+            padding: 20px;
+            font-size: 1.2rem;
+            background: white;
+            color: #1E1B4B;
+            border: 3px solid #8B5CF6;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+        }
+
+        .answer-btn:hover {
+            background: #8B5CF6;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .answer-btn.correct {
+            background: #10B981;
+            border-color: #10B981;
+            color: white;
+            animation: bounce 0.5s;
+        }
+
+        .answer-btn.wrong {
+            background: #EF4444;
+            border-color: #EF4444;
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Quiz Timer */
+        .timer-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+        }
+
+        .timer-circle {
+            fill: none;
+            stroke-width: 10;
+        }
+
+        .timer-bg {
+            stroke: rgba(255,255,255,0.2);
+        }
+
+        .timer-progress {
+            stroke: #06B6D4;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear, stroke 0.3s;
+        }
+
+        .timer-progress.warning {
+            stroke: #F97316;
+        }
+
+        .timer-progress.danger {
+            stroke: #EF4444;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Fredoka One', cursive;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .quiz-card {
+            background: white;
+            color: #1E1B4B;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .level-easy {
+            background: #10B981;
+            color: white;
+        }
+
+        .level-medium {
+            background: #F97316;
+            color: white;
+        }
+
+        .level-hard {
+            background: #8B5CF6;
+            color: white;
+        }
+
+        .quiz-question-text {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            font-weight: 700;
+        }
+
+        .answer-option {
+            margin: 10px 0;
+            padding: 15px;
+            background: #F8FAFC;
+            border-radius: 10px;
+            border: 2px solid #E2E8F0;
+        }
+
+        .answer-option-es {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #4C1D95;
+        }
+
+        .answer-option-en {
+            font-size: 0.95rem;
+            color: #64748B;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        /* Results */
+        .score-display {
+            font-family: 'Fredoka One', cursive;
+            font-size: 5rem;
+            background: linear-gradient(135deg, #06B6D4, #8B5CF6, #F97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 30px 0;
+        }
+
+        .result-message {
+            font-size: 1.8rem;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #8B5CF6;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            .gadget-icon { font-size: 5rem; }
+            .spanish-word { font-size: 2rem; }
+            .timer-container { width: 150px; height: 150px; }
+            .timer-text { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <button class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</button>
+    <div class="score-counter" id="scoreCounter" style="display: none;">Score: <span id="score">0</span></div>
+
+    <div class="container">
+        <!-- START SCREEN -->
+        <div class="screen active" id="start-screen">
+            <h1>¡Los Aparatos Mágicos!</h1>
+            <p class="subtitle">Open the magic chest and discover the world of gadgets!</p>
+            <button class="btn" onclick="game.start()">¡Empezar! 🚀</button>
+        </div>
+
+        <!-- LEARNING MODE -->
+        <div class="screen" id="learning-screen">
+            <h2>📚 Learn the Gadgets</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="learningProgress" style="width: 16.67%"></div>
+            </div>
+            <p style="margin-bottom: 10px;">Card <span id="cardNumber">1</span> of 6</p>
+            <div class="card-container">
+                <div class="gadget-icon" id="gadgetIcon">📱</div>
+                <div class="spanish-word" id="spanishWord">el móvil</div>
+                <div class="pronunciation" id="pronunciation">[el MO-vil]</div>
+                <div class="example-phrase" id="examplePhrase">¿Qué es esto? — Es un móvil.</div>
+                <button class="speak-btn" onclick="game.speakCurrentWord()" title="Listen">🔊</button>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-small btn-secondary" onclick="game.prevCard()">← Previous</button>
+                <button class="btn btn-small" onclick="game.nextCard()">Next →</button>
+            </div>
+            <button class="btn" onclick="game.toPracticeMode()" style="margin-top: 20px;">Continue →</button>
+        </div>
+
+        <!-- PRACTICE MODE - VERBS -->
+        <div class="screen" id="practice-screen">
+            <h2>🎭 Verbs in Action</h2>
+            <p style="margin-bottom: 20px; font-size: 1.2rem;">Learn these useful verbs with gadgets!</p>
+            
+            <div class="verb-section">
+                <div class="verb-title">📱 TENER (to have)</div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Yo tengo</strong> un móvil.</div>
+                        <div class="verb-example-en">(I have a mobile phone.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Yo tengo un móvil')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Tú tienes</strong> una tablet.</div>
+                        <div class="verb-example-en">(You have a tablet.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Tú tienes una tablet')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+            </div>
+
+            <div class="verb-section">
+                <div class="verb-title">✋ TOMAR (to take)</div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Yo tomo</strong> la cámara.</div>
+                        <div class="verb-example-en">(I take the camera.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Yo tomo la cámara')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Tú tomas</strong> el portátil.</div>
+                        <div class="verb-example-en">(You take the laptop.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Tú tomas el portátil')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+            </div>
+
+            <div class="verb-section">
+                <div class="verb-title">🎁 DAR (to give)</div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Yo doy</strong> la consola.</div>
+                        <div class="verb-example-en">(I give the console.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Yo doy la consola')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Tú das</strong> los auriculares.</div>
+                        <div class="verb-example-en">(You give the headphones.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Tú das los auriculares')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+            </div>
+
+            <div class="verb-section">
+                <div class="verb-title">💭 QUERER (to want)</div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Yo quiero</strong> un móvil nuevo.</div>
+                        <div class="verb-example-en">(I want a new mobile phone.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Yo quiero un móvil nuevo')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+                <div class="verb-example-box">
+                    <div>
+                        <div class="verb-example-text"><strong>Tú quieres</strong> una tablet.</div>
+                        <div class="verb-example-en">(You want a tablet.)</div>
+                    </div>
+                    <button class="speak-btn" onclick="game.speak('Tú quieres una tablet')" style="width: 45px; height: 45px; font-size: 1.3rem;">🔊</button>
+                </div>
+            </div>
+
+            <button class="btn" onclick="game.toSituations()" style="margin-top: 30px;">Continue →</button>
+        </div>
+
+        <!-- REAL-LIFE SITUATIONS -->
+        <div class="screen" id="situations-screen">
+            <h2>💬 Real-Life Dialogues</h2>
+            <p style="margin-bottom: 20px; font-size: 1.2rem;">Read these conversations carefully!</p>
+            <p style="margin-bottom: 20px;">Situation <span id="situationNumber">1</span> of 5</p>
+            <div id="situationsContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-small btn-secondary" onclick="game.prevSituation()">← Previous</button>
+                <button class="btn btn-small" onclick="game.nextSituation()">Next →</button>
+            </div>
+            <button class="btn" onclick="game.toGapFill()" style="margin-top: 20px;">Continue →</button>
+        </div>
+
+        <!-- GAP FILL QUIZ -->
+        <div class="screen" id="gapfill-screen">
+            <h2>✏️ Fill in the Blanks</h2>
+            <p style="margin-bottom: 20px; font-size: 1.2rem;">Choose the correct gadget!</p>
+            <p style="margin-bottom: 20px;">Question <span id="gapNumber">1</span> of 6</p>
+            <div id="gapFillContainer"></div>
+        </div>
+
+        <!-- FINAL QUIZ -->
+        <div class="screen" id="finalquiz-screen">
+            <h2>🎯 Quiz Challenge!</h2>
+            <div class="timer-container" id="timerContainer">
+                <svg class="timer-svg" width="200" height="200">
+                    <circle class="timer-circle timer-bg" cx="100" cy="100" r="90"></circle>
+                    <circle class="timer-circle timer-progress" id="timerProgress" cx="100" cy="100" r="90" 
+                            stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="timer-text" id="timerText">10</div>
+            </div>
+            <div class="quiz-card" id="quizCard"></div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div class="screen" id="results-screen">
+            <h2>🎉 ¡Felicidades!</h2>
+            <div class="score-display" id="finalScore">0</div>
+            <div class="result-message" id="resultMessage">Excellent job!</div>
+            <button class="btn" onclick="game.restart()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // AUDIO SYSTEM
+        class AudioSystem {
+            constructor() {
+                this.enabled = true;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            playTone(freq, duration, type = 'sine') {
+                if (!this.enabled) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }
+
+            magicChime() {
+                this.playTone(523.25, 0.5);
+                setTimeout(() => this.playTone(659.25, 0.5), 100);
+                setTimeout(() => this.playTone(783.99, 0.8), 200);
+            }
+
+            correct() {
+                this.playTone(523.25, 0.15);
+                setTimeout(() => this.playTone(659.25, 0.2), 100);
+            }
+
+            wrong() {
+                this.playTone(200, 0.3, 'sawtooth');
+            }
+
+            tick() {
+                this.playTone(800, 0.05, 'square');
+            }
+
+            levelUp() {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 0.2), i * 100);
+                });
+            }
+
+            victory() {
+                [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98].forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 0.3), i * 150);
+                });
+            }
+
+            toggle() {
+                this.enabled = !this.enabled;
+                return this.enabled;
+            }
+        }
+
+        // GAME DATA
+        const gadgets = [
+            { name: 'el móvil', icon: '📱', pronunciation: '[el MO-vil]', example: '¿Qué es esto? — Es un móvil.' },
+            { name: 'la tablet', icon: '📲', pronunciation: '[la ta-BLET]', example: '¿Qué es esto? — Es una tablet.' },
+            { name: 'el portátil', icon: '💻', pronunciation: '[el por-TA-til]', example: '¿Qué es esto? — Es un portátil.' },
+            { name: 'la consola', icon: '🎮', pronunciation: '[la con-SO-la]', example: '¿Qué es esto? — Es una consola.' },
+            { name: 'los auriculares', icon: '🎧', pronunciation: '[los au-ri-cu-LA-res]', example: '¿Qué es esto? — Son unos auriculares.' },
+            { name: 'la cámara', icon: '📷', pronunciation: '[la CA-ma-ra]', example: '¿Qué es esto? — Es una cámara.' }
+        ];
+
+        const situations = [
+            {
+                title: '🛒 En la tienda',
+                subtitle: 'In the shop',
+                dialogue: [
+                    { speaker: 'Dependiente', spanish: '¿Qué quieres comprar?', english: 'What do you want to buy?' },
+                    { speaker: 'Tú', spanish: 'Quiero un móvil nuevo.', english: 'I want a new mobile phone.' },
+                    { speaker: 'Tú', spanish: '¿Cuánto cuesta?', english: 'How much does it cost?' },
+                    { speaker: 'Dependiente', spanish: 'Cuesta 300 euros.', english: 'It costs 300 euros.' }
+                ]
+            },
+            {
+                title: '👥 Con tu amigo',
+                subtitle: 'With your friend',
+                dialogue: [
+                    { speaker: 'Amigo', spanish: '¿Puedo ver tu tablet?', english: 'Can I see your tablet?' },
+                    { speaker: 'Tú', spanish: 'Claro, toma mi tablet.', english: 'Sure, take my tablet.' },
+                    { speaker: 'Amigo', spanish: '¡Gracias! ¿Tienes juegos?', english: 'Thanks! Do you have games?' },
+                    { speaker: 'Tú', spanish: 'Sí, tengo muchos juegos.', english: 'Yes, I have many games.' }
+                ]
+            },
+            {
+                title: '🏠 En casa',
+                subtitle: 'At home',
+                dialogue: [
+                    { speaker: 'Hermano/a', spanish: '¿Tienes la consola?', english: 'Do you have the console?' },
+                    { speaker: 'Tú', spanish: 'Sí, tengo la consola.', english: 'Yes, I have the console.' },
+                    { speaker: 'Hermano/a', spanish: '¿Me das la consola, por favor?', english: 'Can you give me the console, please?' },
+                    { speaker: 'Tú', spanish: '¡Sí, doy!', english: 'Yes, I give!' }
+                ]
+            },
+            {
+                title: '📚 En el colegio',
+                subtitle: 'At school',
+                dialogue: [
+                    { speaker: 'Compañero', spanish: '¿Tienes una cámara para el proyecto?', english: 'Do you have a camera for the project?' },
+                    { speaker: 'Tú', spanish: 'Sí, tengo una cámara.', english: 'Yes, I have a camera.' },
+                    { speaker: 'Compañero', spanish: '¿Tomas una foto de mi trabajo?', english: 'Can you take a photo of my work?' },
+                    { speaker: 'Tú', spanish: '¡Claro que sí! Tomo la foto.', english: 'Of course! I take the photo.' }
+                ]
+            },
+            {
+                title: '🌳 En el parque',
+                subtitle: 'In the park',
+                dialogue: [
+                    { speaker: 'Amigo', spanish: '¡Mira! Un perro bonito. ¿Tienes tu móvil?', english: 'Look! A cute dog. Do you have your phone?' },
+                    { speaker: 'Tú', spanish: 'Sí, tengo mi móvil aquí.', english: 'Yes, I have my phone here.' },
+                    { speaker: 'Amigo', spanish: '¿Tomas una foto del perro?', english: 'Can you take a photo of the dog?' },
+                    { speaker: 'Tú', spanish: '¡Sí! Tomo la foto ahora.', english: 'Yes! I take the photo now.' }
+                ]
+            }
+        ];
+
+        const gapFillQuestions = [
+            { context: 'In the shop:', text: 'Quiero un ______ nuevo.', answer: 'móvil', options: ['móvil', 'tablet', 'cámara'] },
+            { context: 'With your friend:', text: 'Toma mi ______.', answer: 'tablet', options: ['móvil', 'tablet', 'consola'] },
+            { context: 'At home:', text: '¿Tienes la ______?', answer: 'consola', options: ['tablet', 'consola', 'cámara'] },
+            { context: 'At school:', text: 'Tengo una ______ para el proyecto.', answer: 'cámara', options: ['cámara', 'tablet', 'consola'] },
+            { context: 'In the park:', text: 'Tomo una foto con el ______.', answer: 'móvil', options: ['portátil', 'móvil', 'auriculares'] },
+            { context: 'General:', text: 'Escucho música con los ______.', answer: 'auriculares', options: ['auriculares', 'móvil', 'tablet'] }
+        ];
+
+        const quizQuestions = [
+            // Level 1 - Easy (3 questions)
+            { level: 'easy', question: '¿Qué es esto? 📱', correct: 'el móvil', options: ['el móvil', 'la tablet', 'la cámara'], time: 10, points: 10 },
+            { level: 'easy', question: '¿Qué es esto? 🎮', correct: 'la consola', options: ['la consola', 'el portátil', 'los auriculares'], time: 10, points: 10 },
+            { level: 'easy', question: '¿Qué es esto? 📷', correct: 'la cámara', options: ['la cámara', 'el móvil', 'la tablet'], time: 10, points: 10 },
+            
+            // Level 2 - Medium (3 questions with translations)
+            { level: 'medium', question: 'I take a photo', correct: 'Tomo una foto', options: [
+                { es: 'Tomo una foto', en: 'I take a photo' },
+                { es: 'Juego a la consola', en: 'I play console' },
+                { es: 'Escucho música', en: 'I listen to music' }
+            ], time: 8, points: 20 },
+            { level: 'medium', question: 'You have a laptop', correct: 'Tienes un portátil', options: [
+                { es: 'Tienes un portátil', en: 'You have a laptop' },
+                { es: 'Tomas un móvil', en: 'You take a phone' },
+                { es: 'Das una tablet', en: 'You give a tablet' }
+            ], time: 8, points: 20 },
+            { level: 'medium', question: 'I give the headphones', correct: 'Doy los auriculares', options: [
+                { es: 'Doy los auriculares', en: 'I give the headphones' },
+                { es: 'Tengo la consola', en: 'I have the console' },
+                { es: 'Tomo la cámara', en: 'I take the camera' }
+            ], time: 8, points: 20 },
+            
+            // Level 3 - Hard (simplified, NO timer, 2 questions)
+            { level: 'hard', question: 'Your friend wants your tablet. What do you say?', correct: 'Toma mi tablet', options: [
+                { es: 'Toma mi tablet', en: 'Take my tablet' },
+                { es: 'Tengo mi tablet', en: 'I have my tablet' },
+                { es: 'Quiero mi tablet', en: 'I want my tablet' }
+            ], time: null, points: 30 },
+            { level: 'hard', question: 'You want to buy a phone. What do you say?', correct: 'Quiero un móvil', options: [
+                { es: 'Quiero un móvil', en: 'I want a phone' },
+                { es: 'Tengo un móvil', en: 'I have a phone' },
+                { es: 'Tomo un móvil', en: 'I take a phone' }
+            ], time: null, points: 30 }
+        ];
+
+        // GAME CLASS
+        class Game {
+            constructor() {
+                this.audio = new AudioSystem();
+                this.score = 0;
+                this.currentCard = 0;
+                this.currentSituation = 0;
+                this.currentGapQuestion = 0;
+                this.currentQuizQuestion = 0;
+                this.timer = null;
+                this.timeLeft = 10;
+                
+                document.getElementById('soundToggle').addEventListener('click', () => {
+                    const enabled = this.audio.toggle();
+                    document.getElementById('soundToggle').textContent = enabled ? '🔊' : '🔇';
+                });
+            }
+
+            start() {
+                this.audio.magicChime();
+                this.showScreen('learning-screen');
+                this.showCard();
+                document.getElementById('scoreCounter').style.display = 'block';
+            }
+
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            // LEARNING MODE
+            showCard() {
+                const gadget = gadgets[this.currentCard];
+                document.getElementById('gadgetIcon').textContent = gadget.icon;
+                document.getElementById('spanishWord').textContent = gadget.name;
+                document.getElementById('pronunciation').textContent = gadget.pronunciation;
+                document.getElementById('examplePhrase').textContent = gadget.example;
+                document.getElementById('cardNumber').textContent = this.currentCard + 1;
+                document.getElementById('learningProgress').style.width = `${((this.currentCard + 1) / 6) * 100}%`;
+            }
+
+            speakCurrentWord() {
+                const gadget = gadgets[this.currentCard];
+                this.speak(gadget.name);
+            }
+
+            speak(text) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'es-ES';
+                    utterance.rate = 0.9;
+                    speechSynthesis.speak(utterance);
+                }
+            }
+
+            nextCard() {
+                if (this.currentCard < 5) {
+                    this.currentCard++;
+                    this.showCard();
+                }
+            }
+
+            prevCard() {
+                if (this.currentCard > 0) {
+                    this.currentCard--;
+                    this.showCard();
+                }
+            }
+
+            toPracticeMode() {
+                this.showScreen('practice-screen');
+            }
+
+            // SITUATIONS
+            showSituation() {
+                const sit = situations[this.currentSituation];
+                document.getElementById('situationNumber').textContent = this.currentSituation + 1;
+                
+                const container = document.getElementById('situationsContainer');
+                container.innerHTML = `
+                    <div class="comic-container">
+                        <div class="situation-title">${sit.title}</div>
+                        <div class="situation-subtitle">${sit.subtitle}</div>
+                        ${sit.dialogue.map(line => `
+                            <div class="dialogue-box">
+                                <div class="dialogue-line">
+                                    <div class="dialogue-content">
+                                        <span class="speaker">${line.speaker}:</span>
+                                        <div class="spanish-text">${line.spanish}</div>
+                                        <div class="english-translation">${line.english}</div>
+                                    </div>
+                                    <button class="speak-btn" onclick="game.speak('${line.spanish}')" style="width: 45px; height: 45px; font-size: 1.3rem; flex-shrink: 0;">🔊</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            toSituations() {
+                this.currentSituation = 0;
+                this.showScreen('situations-screen');
+                this.showSituation();
+            }
+
+            nextSituation() {
+                if (this.currentSituation < 4) {
+                    this.currentSituation++;
+                    this.showSituation();
+                }
+            }
+
+            prevSituation() {
+                if (this.currentSituation > 0) {
+                    this.currentSituation--;
+                    this.showSituation();
+                }
+            }
+
+            // GAP FILL
+            showGapQuestion() {
+                const q = gapFillQuestions[this.currentGapQuestion];
+                document.getElementById('gapNumber').textContent = this.currentGapQuestion + 1;
+                
+                const container = document.getElementById('gapFillContainer');
+                container.innerHTML = `
+                    <div class="gap-fill-container">
+                        <div class="gap-question">
+                            <div class="gap-context">${q.context}</div>
+                            <div class="gap-text">${q.text.replace('______', '<span class="gap">______</span>')}</div>
+                        </div>
+                        <div class="answer-options">
+                            ${q.options.map(opt => `
+                                <button class="answer-btn" onclick="game.checkGapAnswer('${opt}', '${q.answer}')">${opt}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            checkGapAnswer(selected, correct) {
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach(btn => {
+                    if (btn.textContent === correct) btn.classList.add('correct');
+                    else if (btn.textContent === selected) btn.classList.add('wrong');
+                    btn.disabled = true;
+                });
+
+                if (selected === correct) {
+                    this.audio.correct();
+                    this.score += 15;
+                    this.updateScore();
+                } else {
+                    this.audio.wrong();
+                }
+
+                setTimeout(() => {
+                    this.currentGapQuestion++;
+                    if (this.currentGapQuestion < gapFillQuestions.length) {
+                        this.showGapQuestion();
+                    } else {
+                        this.toFinalQuiz();
+                    }
+                }, 1500);
+            }
+
+            toGapFill() {
+                this.currentGapQuestion = 0;
+                this.showScreen('gapfill-screen');
+                this.showGapQuestion();
+            }
+
+            // FINAL QUIZ
+            showQuizQuestion() {
+                if (this.currentQuizQuestion >= quizQuestions.length) {
+                    this.showResults();
+                    return;
+                }
+
+                const q = quizQuestions[this.currentQuizQuestion];
+                const card = document.getElementById('quizCard');
+                const timerContainer = document.getElementById('timerContainer');
+                
+                // Hide timer for level 3 (hard)
+                if (q.level === 'hard') {
+                    timerContainer.style.display = 'none';
+                } else {
+                    timerContainer.style.display = 'block';
+                }
+                
+                const levelClass = q.level === 'easy' ? 'level-easy' : q.level === 'medium' ? 'level-medium' : 'level-hard';
+                const levelText = q.level === 'easy' ? 'Level 1: Easy' : q.level === 'medium' ? 'Level 2: Medium' : 'Level 3: Hard';
+                
+                // Format options based on level
+                let optionsHtml = '';
+                if (q.level === 'easy') {
+                    optionsHtml = q.options.map(opt => 
+                        `<button class="answer-btn" onclick="game.checkQuizAnswer('${opt}', '${q.correct}', ${q.points})">${opt}</button>`
+                    ).join('');
+                } else {
+                    // Medium and Hard levels have objects with es and en
+                    optionsHtml = q.options.map(opt => 
+                        `<button class="answer-btn" onclick="game.checkQuizAnswer('${opt.es}', '${q.correct}', ${q.points})">
+                            <div class="answer-option">
+                                <div class="answer-option-es">${opt.es}</div>
+                                <div class="answer-option-en">${opt.en}</div>
+                            </div>
+                        </button>`
+                    ).join('');
+                }
+                
+                card.innerHTML = `
+                    <div class="level-badge ${levelClass}">${levelText} - ${q.points} points</div>
+                    <div class="quiz-question-text">${q.question}</div>
+                    <div class="answer-options" style="grid-template-columns: 1fr;">
+                        ${optionsHtml}
+                    </div>
+                `;
+
+                if (q.level !== 'hard' && q.time) {
+                    this.startTimer(q.time);
+                }
+            }
+
+            startTimer(seconds) {
+                this.timeLeft = seconds;
+                const totalTime = seconds;
+                const circle = document.getElementById('timerProgress');
+                const text = document.getElementById('timerText');
+                const radius = 90;
+                const circumference = 2 * Math.PI * radius;
+                
+                circle.style.strokeDasharray = circumference;
+                circle.classList.remove('warning', 'danger');
+                
+                if (this.timer) clearInterval(this.timer);
+                
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    text.textContent = this.timeLeft;
+                    
+                    const offset = circumference - (this.timeLeft / totalTime) * circumference;
+                    circle.style.strokeDashoffset = offset;
+                    
+                    if (this.timeLeft <= 3) {
+                        circle.classList.add('danger');
+                        if (this.timeLeft > 0) this.audio.tick();
+                    } else if (this.timeLeft <= 6) {
+                        circle.classList.add('warning');
+                    }
+                    
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        this.audio.wrong();
+                        this.currentQuizQuestion++;
+                        this.showQuizQuestion();
+                    }
+                }, 1000);
+            }
+
+            checkQuizAnswer(selected, correct, points) {
+                if (this.timer) clearInterval(this.timer);
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach(btn => {
+                    if (btn.textContent.includes(correct)) btn.classList.add('correct');
+                    else if (btn.textContent.includes(selected) && selected !== correct) btn.classList.add('wrong');
+                    btn.disabled = true;
+                });
+
+                if (selected === correct) {
+                    this.audio.correct();
+                    this.score += points;
+                    this.updateScore();
+                    setTimeout(() => {
+                        if (this.currentQuizQuestion % 3 === 2) this.audio.levelUp();
+                    }, 500);
+                } else {
+                    this.audio.wrong();
+                }
+
+                setTimeout(() => {
+                    this.currentQuizQuestion++;
+                    this.showQuizQuestion();
+                }, 1500);
+            }
+
+            toFinalQuiz() {
+                this.currentQuizQuestion = 0;
+                this.showScreen('finalquiz-screen');
+                this.showQuizQuestion();
+            }
+
+            // RESULTS
+            showResults() {
+                this.showScreen('results-screen');
+                document.getElementById('finalScore').textContent = this.score;
+                
+                let message = '';
+                if (this.score >= 200) {
+                    message = '🏆 Excellent job!';
+                    this.audio.victory();
+                    this.createConfetti();
+                } else if (this.score >= 150) {
+                    message = '💪 Very good!';
+                    this.audio.victory();
+                } else if (this.score >= 100) {
+                    message = '🎯 Good attempt!';
+                } else {
+                    message = '📚 Keep practicing!';
+                }
+                
+                document.getElementById('resultMessage').textContent = message;
+            }
+
+            createConfetti() {
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + 'vw';
+                        confetti.style.background = ['#8B5CF6', '#06B6D4', '#F97316', '#EC4899'][Math.floor(Math.random() * 4)];
+                        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                        document.body.appendChild(confetti);
+                        setTimeout(() => confetti.remove(), 4000);
+                    }, i * 50);
+                }
+            }
+
+            updateScore() {
+                document.getElementById('score').textContent = this.score;
+            }
+
+            restart() {
+                this.score = 0;
+                this.currentCard = 0;
+                this.currentSituation = 0;
+                this.currentGapQuestion = 0;
+                this.currentQuizQuestion = 0;
+                this.updateScore();
+                this.start();
+            }
+        }
+
+        const game = new Game();
+    </script>
+</body>
+</html>
